@@ -1,0 +1,36 @@
+// {
+//     "servers": {
+//         "mui-mcp": {
+//             "type": "stdio",
+//             "command": "npx",
+//             "args": [
+//                 "-y",
+//                 "@mui/mcp@latest"
+//             ]
+//         },
+//     }
+// }
+{
+    "mcpServers": {
+        "Context7": {
+            "url": "https://mcp.context7.com/mcp",
+            "headers": {}
+        },
+        "mui-mcp": {
+            "env": {},
+            "command": "npx",
+            "args": [
+                "-y",
+                "@mui/mcp@latest"
+            ]
+        },
+        "AWS Documentation": {
+            "command": "uvx awslabs.aws-documentation-mcp-server@latest",
+            "env": {
+                "FASTMCP_LOG_LEVEL": "ERROR",
+                "AWS_DOCUMENTATION_PARTITION": "aws"
+            },
+            "args": []
+        }
+    }
+}
