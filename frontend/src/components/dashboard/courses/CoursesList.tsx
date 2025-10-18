@@ -1,12 +1,12 @@
-import { Card } from "../../ui/card";
-import { Button } from "../../ui/button";
+import { Award, BookOpen, Calendar, Edit, Filter, FolderOpen, Plus, StickyNote } from "lucide-react";
+import { Course } from "../../../types";
 import { Badge } from "../../ui/badge";
-import { Progress } from "../../ui/progress";
-import { Separator } from "../../ui/separator";
+import { Button } from "../../ui/button";
+import { Card } from "../../ui/card";
 import { Label } from "../../ui/label";
+import { Progress } from "../../ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
-import { BookOpen, Plus, Calendar, Edit, FolderOpen, StickyNote, Award, Filter } from "lucide-react";
-import { Course } from "../../../contexts/DataContext";
+import { Separator } from "../../ui/separator";
 
 interface CoursesListProps {
   courses: Course[];

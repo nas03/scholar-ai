@@ -1,20 +1,27 @@
+import {
+    ArrowLeft, BookOpen, Calendar, Clock, Edit,
+    File,
+    FileText,
+    FolderOpen,
+    Link as LinkIcon,
+    Plus,
+    StickyNote,
+    Trash2,
+    Upload,
+    Video
+} from "lucide-react";
 import { useState } from "react";
-import { Card } from "../../ui/card";
-import { Button } from "../../ui/button";
+import { Course } from "../../../types";
 import { Badge } from "../../ui/badge";
-import { Separator } from "../../ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "../../ui/dialog";
+import { Button } from "../../ui/button";
+import { Card } from "../../ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../ui/dialog";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import { Separator } from "../../ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import { Textarea } from "../../ui/textarea";
-import { 
-  ArrowLeft, BookOpen, Calendar, Clock, Edit, FolderOpen, 
-  StickyNote, Upload, Plus, Trash2, FileText, Video, 
-  Link as LinkIcon, File 
-} from "lucide-react";
-import { Course } from "../../../contexts/DataContext";
 
 interface CourseDetailsProps {
   course: Course;
