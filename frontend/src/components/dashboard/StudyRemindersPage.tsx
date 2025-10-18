@@ -1,17 +1,17 @@
+import { AlertCircle, Bell, CheckCircle2, Clock, Edit, Plus, Trash2 } from "lucide-react";
+import * as React from 'react';
 import { useState } from "react";
-import { Card } from "../ui/card";
-import { Button } from "../ui/button";
-import { Bell, Plus, Clock, CheckCircle2, AlertCircle, Trash2, Edit } from "lucide-react";
+import { useData } from "../../contexts/DataContext";
 import { Badge } from "../ui/badge";
-import { Switch } from "../ui/switch";
+import { Button } from "../ui/button";
+import { Card } from "../ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Textarea } from "../ui/textarea";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "../ui/pagination";
-import { useData } from "../../contexts/DataContext";
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Switch } from "../ui/switch";
+import { Textarea } from "../ui/textarea";
 export function StudyRemindersPage() {
   const { reminders, courses, addReminder, updateReminder, deleteReminder } = useData();
   const [showAddReminderDialog, setShowAddReminderDialog] = useState(false);

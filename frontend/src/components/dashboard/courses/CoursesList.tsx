@@ -1,4 +1,5 @@
 import { Award, BookOpen, Calendar, Edit, Filter, FolderOpen, Plus, StickyNote } from "lucide-react";
+import * as React from 'react';
 import { Course } from "../../../types";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
@@ -7,7 +8,6 @@ import { Label } from "../../ui/label";
 import { Progress } from "../../ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Separator } from "../../ui/separator";
-
 interface CoursesListProps {
   courses: Course[];
   selectedSemester: string;

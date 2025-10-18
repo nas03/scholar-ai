@@ -1,25 +1,25 @@
-import { useState, useRef, useEffect } from "react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import { Badge } from "../ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { 
-  ArrowLeft, 
-  Save, 
-  X, 
-  Plus, 
-  Highlighter, 
-  MessageSquare,
-  Eye,
+import {
+  ArrowLeft,
   Edit3,
-  Trash2
+  Eye,
+  Highlighter,
+  MessageSquare,
+  Plus,
+  Save,
+  Trash2,
+  X
 } from "lucide-react";
+import * as React from 'react';
+import { useEffect, useRef, useState } from "react";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
 import { Card } from "../ui/card";
-import { Separator } from "../ui/separator";
+import { Input } from "../ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Separator } from "../ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Textarea } from "../ui/textarea";
 type Highlight = {
   id: string;
   text: string;

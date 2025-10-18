@@ -1,10 +1,10 @@
-import { useState, useRef } from "react";
+import { ArrowLeft, GraduationCap, Mail } from "lucide-react";
+import * as React from 'react';
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { GraduationCap, Mail, ArrowLeft } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "./ui/input-otp";
-import { toast } from "sonner@2.0.3";
-
 interface OTPVerificationPageProps {
   email: string;
   onNavigate: (page: 'home' | 'signin' | 'signup' | 'dashboard') => void;

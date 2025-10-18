@@ -1,14 +1,14 @@
+import { Trash2 } from "lucide-react";
+import * as React from 'react';
+import { Button } from "../../ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../ui/dialog";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
-import { Textarea } from "../../ui/textarea";
-import { Button } from "../../ui/button";
 import { Separator } from "../../ui/separator";
-import { Trash2 } from "lucide-react";
+import { Textarea } from "../../ui/textarea";
 import { SchedulePicker, ScheduleTime } from "../SchedulePicker";
 import { colorOptions } from "./utils";
-
 interface EditCourseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;

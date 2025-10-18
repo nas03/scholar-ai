@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
-import { Card } from "../ui/card";
+import { BookOpen, Calendar, Clock, Edit2, MapPin, Plus, Trash2, X } from "lucide-react";
+import * as React from 'react';
+import { useEffect, useState } from "react";
+import { useData } from "../../contexts/DataContext";
+import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import { Card } from "../ui/card";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "../ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Calendar, Clock, Plus, MapPin, X, Edit2, Trash2, BookOpen } from "lucide-react";
-import { Badge } from "../ui/badge";
-import { useData } from "../../contexts/DataContext";
-
+import { Textarea } from "../ui/textarea";
 type ScheduleEvent = {
   id: string;
   time: string;

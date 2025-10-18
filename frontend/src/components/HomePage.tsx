@@ -1,8 +1,8 @@
+import { BarChart3, Bell, Brain, FileText, GraduationCap, Sparkles } from "lucide-react";
+import * as React from 'react';
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { GraduationCap, Brain, BarChart3, Bell, FileText, Sparkles } from "lucide-react";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
-
 interface HomePageProps {
   onNavigate: (page: 'signin' | 'signup' | 'dashboard') => void;
 }

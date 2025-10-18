@@ -1,31 +1,32 @@
-import { useState } from "react";
-import { Button } from "./ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { useData } from "../contexts/DataContext";
-import { 
-  GraduationCap, 
-  BookOpen, 
-  FileText, 
-  Network, 
-  BarChart3, 
-  Brain, 
-  Bell, 
+import {
+  BarChart3,
+  Bell,
+  BookOpen,
+  Brain,
   Calendar,
-  Settings,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  GraduationCap,
   LogOut,
   Menu,
-  X,
-  ChevronLeft,
-  ChevronRight
+  Network,
+  Settings,
+  X
 } from "lucide-react";
-import { CoursesPage } from "./dashboard/CoursesPage";
-import { LectureNotesPage } from "./dashboard/LectureNotesPage";
-import { KnowledgeWebPage } from "./dashboard/KnowledgeWebPage";
-import { GPATrackingPage } from "./dashboard/GPATrackingPage";
+import * as React from 'react';
+import { useState } from "react";
+import { useData } from "../contexts/DataContext";
 import { AutoQuizzesPage } from "./dashboard/AutoQuizzesPage";
-import { StudyRemindersPage } from "./dashboard/StudyRemindersPage";
-import { SchedulePage } from "./dashboard/SchedulePage";
+import { CoursesPage } from "./dashboard/CoursesPage";
+import { GPATrackingPage } from "./dashboard/GPATrackingPage";
+import { KnowledgeWebPage } from "./dashboard/KnowledgeWebPage";
+import { LectureNotesPage } from "./dashboard/LectureNotesPage";
 import { PreferencesPage } from "./dashboard/PreferencesPage";
+import { SchedulePage } from "./dashboard/SchedulePage";
+import { StudyRemindersPage } from "./dashboard/StudyRemindersPage";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 export type DashboardSection = 

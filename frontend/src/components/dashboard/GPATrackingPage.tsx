@@ -1,14 +1,14 @@
+import { Award, BarChart3, Plus, Settings, TrendingUp } from "lucide-react";
+import * as React from 'react';
 import { useState } from "react";
-import { Card } from "../ui/card";
-import { Button } from "../ui/button";
-import { BarChart3, TrendingUp, Award, Plus, Settings } from "lucide-react";
+import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useData } from "../../contexts/DataContext";
 import { Badge } from "../ui/badge";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
+import { Button } from "../ui/button";
+import { Card } from "../ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { useData } from "../../contexts/DataContext";
-
 export function GPATrackingPage() {
   const { courses, semesters, graduationRequirements, updateGraduationRequirements } = useData();
   const [showSettingsDialog, setShowSettingsDialog] = useState(false);

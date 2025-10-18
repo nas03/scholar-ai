@@ -1,11 +1,11 @@
+import { AlertCircle, ArrowLeft, GraduationCap } from "lucide-react";
+import * as React from 'react';
 import { useState } from "react";
 import { Button } from "./ui/button";
+import { Card } from "./ui/card";
+import { Checkbox } from "./ui/checkbox";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Card } from "./ui/card";
-import { GraduationCap, ArrowLeft, AlertCircle } from "lucide-react";
-import { Checkbox } from "./ui/checkbox";
-
 interface SignInPageProps {
   onNavigate: (page: 'home' | 'signup' | 'dashboard') => void;
 }

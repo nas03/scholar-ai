@@ -1,14 +1,14 @@
+import { BookOpen, Calendar, Eye, FileText, Filter, Plus, Search, Sparkles, Tag, Trash2, X } from "lucide-react";
+import * as React from 'react';
 import { useState } from "react";
-import { Card } from "../ui/card";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { FileText, Sparkles, Plus, X, Search, Filter, Eye, Trash2, BookOpen, Calendar, Tag } from "lucide-react";
 import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card } from "../ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Input } from "../ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Separator } from "../ui/separator";
 import { NoteEditor } from "./NoteEditor";
-
 type Note = {
   id: string;
   title: string;

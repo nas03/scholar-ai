@@ -1,15 +1,15 @@
+import * as React from 'react';
 import { useState } from "react";
 import { useData } from "../../contexts/DataContext";
 import { ScheduleTime } from "./SchedulePicker";
-import { CoursesList } from "./courses/CoursesList";
-import { CourseDetails } from "./courses/CourseDetails";
 import { AddCourseDialog } from "./courses/AddCourseDialog";
-import { EditCourseDialog } from "./courses/EditCourseDialog";
-import { AddSemesterDialog } from "./courses/AddSemesterDialog";
 import { AddMaterialDialog } from "./courses/AddMaterialDialog";
 import { AddNoteDialog } from "./courses/AddNoteDialog";
+import { AddSemesterDialog } from "./courses/AddSemesterDialog";
+import { CourseDetails } from "./courses/CourseDetails";
+import { CoursesList } from "./courses/CoursesList";
+import { EditCourseDialog } from "./courses/EditCourseDialog";
 import { generateScheduleString } from "./courses/utils";
-
 export function CoursesPage() {
   const { 
     courses, 
