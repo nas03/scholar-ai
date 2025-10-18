@@ -5,19 +5,24 @@ import (
 
 	"github.com/nas03/scholar-ai/backend/global"
 	"github.com/nas03/scholar-ai/backend/internal/models"
+	"gorm.io/gorm"
 )
 
 type IUserRepository interface {
 	CreateUser(userID, username, password, email string) error
 }
 
-type UserRepository struct{}
-
-func NewUserRepository() IUserRepository {
-	return &UserRepository{}
+type UserRepository struct {
+	db *gorm.DB
 }
 
-func (repo *UserRepository) CreateUser(userID, username, password, email string) error {
+func NewUserRepository() IUserRepository {
+	return &UserRepository{
+		db: global.Mdb,
+	}
+}
+
+func (r *UserRepository) CreateUser(userID, username, password, email string) error {
 	user := &models.User{
 		UserID:   userID,
 		Username: username,
@@ -25,7 +30,7 @@ func (repo *UserRepository) CreateUser(userID, username, password, email string)
 		Email:    email,
 	}
 
-	if err := global.Mdb.Create(user).Error; err != nil {
+	if err := r.db.Create(user).Error; err != nil {
 		return fmt.Errorf("error creating new user: %w", err)
 	}
 	return nil

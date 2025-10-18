@@ -8,6 +8,7 @@ import (
 
 type IUserService interface {
 	CreateUser(username, password, email string) int
+	VerifyUserEmail(otp, email string) int
 }
 
 type UserService struct {
@@ -19,6 +20,7 @@ func NewUserService(userRepository repo.IUserRepository) IUserService {
 		userRepo: userRepository,
 	}
 }
+
 func (s *UserService) CreateUser(username, password, email string) int {
 	userUUID, err := uuid.NewRandom()
 	if err != nil {
@@ -29,5 +31,10 @@ func (s *UserService) CreateUser(username, password, email string) int {
 	if err != nil {
 		return response.CodeFailedCreateUser
 	}
+	return response.CodeSuccess
+}
+
+func (s *UserService) VerifyUserEmail(otp, email string) int {
+
 	return response.CodeSuccess
 }
