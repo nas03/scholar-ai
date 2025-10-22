@@ -1,6 +1,6 @@
 APP_NAME=web
 
-.PHONY: backend frontend
+.PHONY:backend frontend
 
 backend:
 	go run backend/cmd/$(APP_NAME)

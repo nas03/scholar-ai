@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	repo "github.com/nas03/scholar-ai/backend/internal/repositories"
 	"github.com/nas03/scholar-ai/backend/pkg/response"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type IUserService interface {
@@ -27,7 +28,12 @@ func (s *UserService) CreateUser(username, password, email string) int {
 		return response.CodeFailedCreateUser
 	}
 
-	err = s.userRepo.CreateUser(userUUID.String(), username, password, email)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return response.CodeFailedCreateUser
+	}
+
+	err = s.userRepo.CreateUser(userUUID.String(), username, string(hashedPassword), email)
 	if err != nil {
 		return response.CodeFailedCreateUser
 	}

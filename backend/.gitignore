@@ -1,0 +1,92 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.txt
+coverage.html
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Dependency directories (remove the comment below to include it)
+vendor/
+
+# Build output
+/bin/
+/dist/
+/build/
+*.exe
+main
+web
+
+# Environment variables - CRITICAL: never commit secrets
+.env
+.env.local
+.env.*.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database files (local development)
+*.db
+*.sqlite
+*.sqlite3
+
+# Swagger auto-generated files (optional: uncomment if you regenerate on build)
+# docs/docs.go
+# docs/swagger.json
+# docs/swagger.yaml
+
+# OS-specific
+Thumbs.db
+.DS_Store
+
+# Air live reload (if you use it for hot reload)
+tmp/
+.air.toml
+
+# Profiling data
+*.prof
+*.pprof
+cpu.pprof
+mem.pprof
+
+# Race detector output
+*.race
+
+# Go module download cache (usually handled globally, but just in case)
+# Uncomment if you have issues:
+# go.sum
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Coverage reports
+coverage/
+*.cover

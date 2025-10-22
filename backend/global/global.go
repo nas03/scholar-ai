@@ -1,7 +1,11 @@
 package global
 
-import "gorm.io/gorm"
+import (
+	"go.uber.org/zap"
+	"gorm.io/gorm"
+)
 
 var (
 	Mdb *gorm.DB
+	Log *zap.Logger
 )

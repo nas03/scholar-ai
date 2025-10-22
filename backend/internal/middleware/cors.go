@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // CORSMiddleware handles Cross-Origin Resource Sharing
@@ -44,18 +45,9 @@ func RequestID() gin.HandlerFunc {
 	}
 }
 
-// generateRequestID generates a simple request ID
 func generateRequestID() string {
-	// Simple implementation - you might want to use a more sophisticated approach
-	return "req-" + randomString(8)
+
+	return uuid.NewString()
 }
 
 // randomString generates a random string of given length
-func randomString(length int) string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	b := make([]byte, length)
-	for i := range b {
-		b[i] = charset[i%len(charset)]
-	}
-	return string(b)
-}

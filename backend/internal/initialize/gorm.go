@@ -47,6 +47,10 @@ func InitGorm() error {
 	// Set global database instance
 	global.Mdb = db
 
-	log.Println("Database connection established successfully")
+	if global.Log != nil {
+		global.Log.Info("Database connection established successfully")
+	} else {
+		log.Println("Database connection established successfully")
+	}
 	return nil
 }

@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS `users`
     `email`        VARCHAR(255) UNIQUE NOT NULL,
     `password`     TEXT                NOT NULL,
     `phone_number` VARCHAR(10)         DEFAULT NULL,
+    `account_status` tinyint default 0 COMMENT
     `updated_at`   DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `created_at`   DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
