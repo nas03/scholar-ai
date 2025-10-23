@@ -2,19 +2,27 @@ package repositories
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
+	"github.com/nas03/scholar-ai/backend/internal/consts"
 	"github.com/nas03/scholar-ai/backend/internal/models"
 	"gorm.io/gorm"
 )
 
 type IUserRepository interface {
+	// Basic CRUD operations
 	CreateUser(ctx context.Context, user *models.User) error
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 	GetUserByID(ctx context.Context, userID string) (*models.User, error)
 
-	// UpdateUserAccountStatus(ctx context.Context, status int)
+	// Update operations
+	UpdateUserAccountStatus(ctx context.Context, userID string, status int8) error
+	UpdateUserPassword(ctx context.Context, userID, password string) error
+	UpdateUserVerification(ctx context.Context, userID string, isEmailVerified, isPhoneVerified bool) error
+	UpdateUser(ctx context.Context, userID string, updates map[string]interface{}) error
+
+	// Transaction operations (like knex.js db.transaction)
+	WithTransaction(ctx context.Context, fn func(tx *gorm.DB) error) error
 }
 
 type UserRepository struct {
@@ -27,38 +35,100 @@ func NewUserRepository(db *gorm.DB) IUserRepository {
 }
 
 // CreateUser inserts a new user into the database.
-// Returns an error if the username or email already exists.
+// Returns raw GORM error - service layer should handle error interpretation
 func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) error {
-	if err := r.db.WithContext(ctx).Create(user).Error; err != nil {
-		// Check for duplicate key error using GORM's built-in error type
-		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return fmt.Errorf("user with this username or email already exists")
-		}
-		return fmt.Errorf("failed to create user: %w", err)
-	}
-	return nil
+	return r.db.WithContext(ctx).Create(user).Error
 }
 
-// GetUserByEmail retrieves a user by email address.
+// GetUserByEmail retrieves a user by email address with optimized query.
+// Returns raw GORM error - service layer should handle error interpretation
 func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	var user models.User
-	if err := r.db.WithContext(ctx).Where("email = ?", email).First(&user).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fmt.Errorf("user not found")
-		}
-		return nil, fmt.Errorf("failed to get user: %w", err)
+	err := r.db.WithContext(ctx).
+		Select("user_id, username, email, password, phone_number, account_status, is_email_verified, is_phone_verified, created_at, updated_at").
+		Where("email = ?", email).
+		First(&user).Error
+
+	if err != nil {
+		return nil, err
 	}
 	return &user, nil
 }
 
-// GetUserByID retrieves a user by ID.
+// GetUserByID retrieves a user by ID with optimized query.
+// Returns raw GORM error - service layer should handle error interpretation
 func (r *UserRepository) GetUserByID(ctx context.Context, userID string) (*models.User, error) {
 	var user models.User
-	if err := r.db.WithContext(ctx).Where("user_id = ?", userID).First(&user).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fmt.Errorf("user not found")
-		}
-		return nil, fmt.Errorf("failed to get user: %w", err)
+	err := r.db.WithContext(ctx).
+		Select("user_id, username, email, password, phone_number, account_status, is_email_verified, is_phone_verified, created_at, updated_at").
+		Where("user_id = ?", userID).
+		First(&user).Error
+
+	if err != nil {
+		return nil, err
 	}
 	return &user, nil
+}
+
+// UpdateUser updates user fields.
+// Returns raw GORM error - service layer should handle error interpretation
+func (r *UserRepository) UpdateUser(ctx context.Context, userID string, updates map[string]interface{}) error {
+	// Remove fields that shouldn't be updated directly
+	delete(updates, "user_id")
+	delete(updates, "created_at")
+
+	result := r.db.WithContext(ctx).Model(&models.User{}).
+		Where("user_id = ?", userID).
+		Updates(updates)
+
+	return result.Error
+}
+
+// UpdateUserAccountStatus updates a user's account status.
+// Valid status values: consts.UserAccountStatus.INACTIVE (0) or consts.UserAccountStatus.ACTIVE (1)
+// Returns raw GORM error - service layer should handle error interpretation
+func (r *UserRepository) UpdateUserAccountStatus(ctx context.Context, userID string, status int8) error {
+	// Validate status value at repository level for data integrity
+	if status != consts.UserAccountStatus.INACTIVE && status != consts.UserAccountStatus.ACTIVE {
+		return fmt.Errorf("invalid account status: %d, must be %d (inactive) or %d (active)",
+			status, consts.UserAccountStatus.INACTIVE, consts.UserAccountStatus.ACTIVE)
+	}
+
+	result := r.db.WithContext(ctx).Model(&models.User{}).
+		Where("user_id = ?", userID).
+		Update("account_status", status)
+
+	return result.Error
+}
+
+// UpdateUserPassword updates a user's password.
+// Returns raw GORM error - service layer should handle error interpretation
+func (r *UserRepository) UpdateUserPassword(ctx context.Context, userID, password string) error {
+	result := r.db.WithContext(ctx).Model(&models.User{}).
+		Where("user_id = ?", userID).
+		Update("password", password)
+
+	return result.Error
+}
+
+// UpdateUserVerification updates user verification status.
+// Returns raw GORM error - service layer should handle error interpretation
+func (r *UserRepository) UpdateUserVerification(ctx context.Context, userID string, isEmailVerified, isPhoneVerified bool) error {
+	updates := map[string]interface{}{
+		"is_email_verified": isEmailVerified,
+		"is_phone_verified": isPhoneVerified,
+	}
+
+	result := r.db.WithContext(ctx).Model(&models.User{}).
+		Where("user_id = ?", userID).
+		Updates(updates)
+
+	return result.Error
+}
+
+// WithTransaction executes a function within a database transaction (like knex.js db.transaction)
+func (r *UserRepository) WithTransaction(ctx context.Context, fn func(tx *gorm.DB) error) error {
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		return fn(tx)
+	})
 }

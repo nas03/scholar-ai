@@ -13,12 +13,14 @@ type TableCommon struct {
 }
 
 type User struct {
-	UserID        string         `gorm:"primaryKey;type:char(36)" json:"user_id"`
-	Username      string         `gorm:"uniqueIndex;not null;size:255" json:"username"`
-	Email         string         `gorm:"uniqueIndex;not null;size:255" json:"email"`
-	Password      string         `gorm:"type:text;not null" json:"-"` // Never expose password in JSON
-	PhoneNumber   sql.NullString `gorm:"size:10" json:"phone_number,omitempty"`
-	AccountStatus int8           `gorm:"not null;default:0" json:"account_status"`
+	UserID          string         `gorm:"primaryKey;type:char(36)" json:"user_id"`
+	Username        string         `gorm:"uniqueIndex;not null;size:255" json:"username"`
+	Email           string         `gorm:"uniqueIndex;not null;size:255" json:"email"`
+	Password        string         `gorm:"type:text;not null" json:"-"` // Never expose password in JSON
+	PhoneNumber     sql.NullString `gorm:"size:10" json:"phone_number,omitempty"`
+	AccountStatus   int8           `gorm:"not null;default:0" json:"account_status"`    // account status (0=inactive, 1=active)
+	IsEmailVerified int8           `gorm:"not null;default:0" json:"is_email_verified"` // email verification (0=unverified, 1=verified)
+	IsPhoneVerified int8           `gorm:"not null;default:0" json:"is_phone_verified"` // phone verification (0=unverified, 1=verified)
 	TableCommon
 
 	// Relationships (one-to-many)

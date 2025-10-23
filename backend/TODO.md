@@ -1,115 +1,297 @@
-Backend roadmap and TODO
+# Scholar AI Backend - Development Roadmap
 
-Scope: Golang backend under `backend/` (Gin + GORM). This plan organizes work into milestones with priorities and clear acceptance criteria.
+## 📋 Overview
+Golang backend using Gin + GORM for the Scholar AI application. This roadmap organizes work into clear milestones with priorities and acceptance criteria.
 
-Legend:
-- Priority: P0 (urgent), P1 (important), P2 (nice-to-have)
-- Status: [ ] todo, [~] in-progress, [x] done
+## 🎯 Legend
+- **Priority**: 🔴 P0 (urgent) | 🟡 P1 (important) | 🟢 P2 (nice-to-have)
+- **Status**: ⬜ Todo | 🟡 In Progress | ✅ Done
 
-Key entities (current + planned):
-- User, Course, Semester, Schedule/Timetable, Reminder, Lecture Notes, Materials, Quiz
+## 🏗️ Key Entities
+- **Core**: User, Course, Semester, Schedule/Timetable
+- **Productivity**: Reminder, Lecture Notes, Materials, Quiz
 
-Milestone M0 — Foundation and conventions
-- [ ] P0 Standardized project configuration
-	- Acceptance: `internal/config/config.go` loads from env and .env; required vars validated with clear errors; sample `.env.example` exists.
-- [ ] P0 Structured logging
-	- Acceptance: Central logger (e.g., zap/logrus) wired in `global/global.go`; request logging middleware; log levels via env; JSON output in prod.
-- [ ] P0 Error and response contract
-	- Acceptance: Use `pkg/response` consistently; add error codes, request-id correlation, and uniform error payload; update controllers to use helpers.
-- [ ] P0 CORS and security headers
-	- Acceptance: `internal/middleware/cors.go` uses allowed origins from config; add secure headers (no sniff, frameguard where relevant).
-- [ ] P1 Rate limiting middleware
-	- Acceptance: Global/token-bucket per IP and per user on auth endpoints.
+---
 
-Milestone M1 — Auth and user management
-- [ ] P0 User registration and login endpoints
-	- Acceptance: POST /api/v1/auth/register, /auth/login, /auth/logout; passwords hashed (bcrypt/argon2id); JWT access + refresh tokens; refresh rotates.
-- [ ] P0 Email verification
-	- Acceptance: Email verification token generation + confirm endpoint; resend with cooldown; mock provider in dev; interface for real provider.
-- [ ] P1 Password reset flow
-	- Acceptance: request reset, token, reset endpoint; token invalidation; minimum password policy.
-- [ ] P1 Phone number update and verification (optional)
-	- Acceptance: Store E.164 numbers; OTP verify; pluggable SMS provider; rate limiting.
-- [ ] P1 2FA (TOTP)
-	- Acceptance: Enable/disable TOTP, QR provisioning, recovery codes, step-up on sensitive actions.
-- [ ] P2 SSO (OIDC: Google/Microsoft)
-	- Acceptance: OAuth2 login, account linking, new-user onboarding with provider claims.
-- [ ] P0 Login attempt tracking and lockout
-	- Acceptance: Track failed attempts; temporary lockout with exponential backoff; audit logs.
+## 🚀 Milestone M0: Foundation & Conventions
 
-Milestone M2 — Core domain CRUD
-- Courses
-	- [ ] P0 CRUD: name, description, length/credits; routes in `internal/router/user.route.go` sibling course routes; service + repo methods; unit tests.
-- Semesters
-	- [ ] P1 CRUD: name, start/end dates; validation that courses map to semesters.
-- Schedule/Timetable
-	- [ ] P1 CRUD: blocks with day-of-week, start/end, location; conflict detection on create/update.
+### 🔴 P0 - Critical Infrastructure
+- [ ] **Standardized Project Configuration**
+  - ✅ Load from env and .env files
+  - ✅ Required variables validated with clear errors
+  - ✅ Sample `.env.example` exists
+  - 📁 `internal/config/` (types.go, database.go, server.go, mail.go)
 
-Milestone M3 — Productivity features
-- Reminders
-	- [ ] P1 CRUD; schedule engine (cron/worker) to dispatch reminders; pluggable channels (email, push placeholder).
-- Lecture Notes
-	- [ ] P1 CRUD; support rich text (store as markdown/json); versioning metadata; basic search by title/tags.
-- Materials
-	- [ ] P1 Upload & list; storage provider interface (local dev, S3-compatible in prod); signed URLs for download; size/type limits.
-- Quiz
-	- [ ] P2 CRUD for quizzes and questions; assignment to course/notes; simple scoring endpoint.
+- [ ] **Structured Logging**
+  - [x] Central logger (zap/logrus) in `global/global.go`
+  - [x] Request logging middleware
+  - [x] Log levels via environment
+  - [ ] JSON output in production
 
-Milestone M4 — Data and persistence
-- [ ] P0 Database migrations
-	- Acceptance: Adopt `golang-migrate` or `goose`; convert `sql/init.sql` into versioned migrations; Makefile targets up/down.
-- [ ] P0 GORM models finalized
-	- Acceptance: Models in `internal/models/*.go` with constraints, indexes; AutoMigrate only used in dev.
-- [ ] P1 Redis integration
-	- Acceptance: Connection pool from config; health-check; used for rate limiting, blacklisted tokens, and caching hot reads.
+- [ ] **Error & Response Contract**
+  - [ ] Use `pkg/response` consistently
+  - [ ] Add error codes and request-id correlation
+  - [ ] Uniform error payload structure
+  - [ ] Update controllers to use helpers
 
-Milestone M5 — Observability and reliability
-- [ ] P0 Health, readiness, liveness
-	- Acceptance: `/healthz` (process), `/readyz` (DB+Redis), `/livez`; hook into container probes.
-- [ ] P1 Metrics (Prometheus)
-	- Acceptance: Basic process, HTTP latency, DB latency, cache hit rate; `/metrics` endpoint.
-- [ ] P2 Tracing (OpenTelemetry)
-	- Acceptance: Traces for HTTP handlers and DB calls; exporter configurable.
+- [ ] **CORS & Security Headers**
+  - [x] `internal/middleware/cors.go` with configurable origins
+  - [ ] Secure headers (no-sniff, frameguard)
+  - [ ] Rate limiting middleware
 
-Milestone M6 — Quality: tests and linting
-- [ ] P0 Unit tests for services/repositories
-	- Acceptance: >60% coverage for core packages; table-driven tests; sqlite-in-memory for GORM repos.
-- [ ] P0 Integration tests for auth flow
-	- Acceptance: Register → verify email → login → refresh → logout happy path passes in CI.
-- [ ] P1 Static analysis
-	- Acceptance: `golangci-lint` configured; CI job fails on lint errors; `go fmt` enforced.
+### 🟡 P1 - Enhanced Security
+- [ ] **Rate Limiting**
+  - [ ] Global/token-bucket per IP
+  - [ ] Per-user limits on auth endpoints
 
-Milestone M7 — Docs and DX
-- [ ] P1 OpenAPI/Swagger docs
-	- Acceptance: `swaggo/swag` integrated; `/swagger/index.html` available in dev; CI step to validate spec builds.
-- [ ] P1 Developer onboarding
-	- Acceptance: README updated with run, test, migrate, and env setup; Makefile targets for common actions.
+---
 
-Milestone M8 — Packaging and deployment
-- [ ] P1 Dockerization
-	- Acceptance: Multi-stage Dockerfile; minimal image; non-root user; healthcheck.
-- [ ] P1 Docker Compose for dev
-	- Acceptance: Compose with app + DB + Redis; hot-reload in dev.
-- [ ] P2 CI/CD pipeline
-	- Acceptance: GitHub Actions: build, test, lint, docker build; artifact or container publish.
+## 🔐 Milestone M1: Authentication & User Management
 
-Backlog and ideas
-- [ ] P2 Full-text search for notes/materials.
-- [ ] P2 Webhook callbacks for reminders.
-- [ ] P2 Background worker separation (e.g., separate process/queue).
+### 🔴 P0 - Core Auth
+- [ ] **User Registration & Login**
+  - [ ] POST `/api/v1/auth/register`
+  - [ ] POST `/api/v1/auth/login`
+  - [ ] POST `/api/v1/auth/logout`
+  - [ ] Password hashing (bcrypt/argon2id)
+  - [ ] JWT access + refresh tokens
+  - [ ] Refresh token rotation
 
-References (current code map)
-- Config: `internal/config/config.go`
-- Models: `internal/models/*.go`
-- Repositories: `internal/repositories/*.go`
-- Services: `internal/services/*.go`
-- Controllers: `internal/controllers/*.go`
-- Router: `internal/router/*.go`
-- Init (GORM/router): `internal/initialize/*.go`
-- Responses: `pkg/response/*`
-- SQL bootstrap: `sql/init.sql`
+- [ ] **Email Verification**
+  - [ ] Token generation + confirm endpoint
+  - [ ] Resend with cooldown
+  - [ ] Mock provider for development
+  - [ ] Interface for real provider
 
-Notes
-- Assume Gin for routing and middleware.
-- JWT signing key and secrets must never be committed; ensure local `.env` and CI secrets are used.
-- Prefer small, composable PRs per milestone bullet with tests.
+- [ ] **Login Security**
+  - [ ] Failed attempt tracking
+  - [ ] Temporary lockout with exponential backoff
+  - [ ] Audit logs
+
+### 🟡 P1 - Advanced Auth
+- [ ] **Password Reset Flow**
+  - [ ] Request reset endpoint
+  - [ ] Token generation and validation
+  - [ ] Reset endpoint with token invalidation
+  - [ ] Minimum password policy
+
+- [ ] **Phone Verification** (Optional)
+  - [ ] Store E.164 format numbers
+  - [ ] OTP verification
+  - [ ] Pluggable SMS provider
+  - [ ] Rate limiting
+
+- [ ] **2FA (TOTP)**
+  - [ ] Enable/disable TOTP
+  - [ ] QR code provisioning
+  - [ ] Recovery codes
+  - [ ] Step-up authentication
+
+### 🟢 P2 - SSO Integration
+- [ ] **OAuth2 SSO**
+  - [ ] Google/Microsoft OIDC
+  - [ ] Account linking
+  - [ ] New-user onboarding with provider claims
+
+---
+
+## 📚 Milestone M2: Core Domain CRUD
+
+### 🔴 P0 - Essential Features
+- [ ] **Courses Management**
+  - [ ] CRUD operations (name, description, credits)
+  - [ ] Routes in `internal/router/user.route.go`
+  - [ ] Service + repository methods
+  - [ ] Unit tests
+
+### 🟡 P1 - Academic Structure
+- [ ] **Semesters Management**
+  - [ ] CRUD operations (name, start/end dates)
+  - [ ] Course-semester mapping validation
+
+- [ ] **Schedule/Timetable**
+  - [ ] CRUD for time blocks
+  - [ ] Day-of-week, start/end times, location
+  - [ ] Conflict detection on create/update
+
+---
+
+## 🎯 Milestone M3: Productivity Features
+
+### 🟡 P1 - Core Productivity
+- [ ] **Reminders System**
+  - [ ] CRUD operations
+  - [ ] Schedule engine (cron/worker)
+  - [ ] Pluggable channels (email, push)
+
+- [ ] **Lecture Notes**
+  - [ ] CRUD operations
+  - [ ] Rich text support (markdown/JSON)
+  - [ ] Versioning metadata
+  - [ ] Basic search by title/tags
+
+- [ ] **Materials Management**
+  - [ ] Upload & list functionality
+  - [ ] Storage provider interface (local/S3)
+  - [ ] Signed URLs for download
+  - [ ] Size/type limits
+
+### 🟢 P2 - Advanced Features
+- [ ] **Quiz System**
+  - [ ] CRUD for quizzes and questions
+  - [ ] Assignment to courses/notes
+  - [ ] Simple scoring endpoint
+
+---
+
+## 🗄️ Milestone M4: Data & Persistence
+
+### 🔴 P0 - Database Foundation
+- [x] **Database Migrations** ✅
+  - [x] Atlas migration tool setup
+  - [x] GORM integration
+  - [x] Makefile targets for up/down
+  - 📁 `migrations/` directory
+
+- [ ] **GORM Models Finalized**
+  - [x] Models in `internal/models/*.go`
+  - [x] Constraints and indexes
+  - [ ] AutoMigrate only in development
+
+### 🟡 P1 - Caching & Performance
+- [ ] **Redis Integration**
+  - [ ] Connection pool from config
+  - [ ] Health check endpoint
+  - [ ] Rate limiting and token blacklisting
+  - [ ] Hot read caching
+
+---
+
+## 📊 Milestone M5: Observability & Reliability
+
+### 🔴 P0 - Health Monitoring
+- [ ] **Health Endpoints**
+  - [ ] `/healthz` (process health)
+  - [ ] `/readyz` (DB + Redis readiness)
+  - [ ] `/livez` (liveness check)
+  - [ ] Container probe integration
+
+### 🟡 P1 - Metrics & Monitoring
+- [ ] **Prometheus Metrics**
+  - [ ] Process metrics
+  - [ ] HTTP latency metrics
+  - [ ] Database latency metrics
+  - [ ] Cache hit rate metrics
+  - [ ] `/metrics` endpoint
+
+### 🟢 P2 - Advanced Observability
+- [ ] **OpenTelemetry Tracing**
+  - [ ] HTTP handler traces
+  - [ ] Database call traces
+  - [ ] Configurable exporter
+
+---
+
+## 🧪 Milestone M6: Quality Assurance
+
+### 🔴 P0 - Testing Foundation
+- [ ] **Unit Tests**
+  - [ ] >60% coverage for core packages
+  - [ ] Table-driven tests
+  - [ ] SQLite-in-memory for GORM repos
+
+- [ ] **Integration Tests**
+  - [ ] Auth flow: register → verify → login → refresh → logout
+  - [ ] CI pipeline integration
+
+### 🟡 P1 - Code Quality
+- [ ] **Static Analysis**
+  - [ ] `golangci-lint` configuration
+  - [ ] CI job fails on lint errors
+  - [ ] `go fmt` enforcement
+
+---
+
+## 📖 Milestone M7: Documentation & Developer Experience
+
+### 🟡 P1 - API Documentation
+- [ ] **OpenAPI/Swagger**
+  - [ ] `swaggo/swag` integration
+  - [ ] `/swagger/index.html` in development
+  - [ ] CI validation for spec builds
+
+- [ ] **Developer Onboarding**
+  - [ ] Updated README with setup instructions
+  - [ ] Makefile targets for common actions
+  - [ ] Environment setup guide
+
+---
+
+## 🐳 Milestone M8: Packaging & Deployment
+
+### 🟡 P1 - Containerization
+- [ ] **Docker Setup**
+  - [ ] Multi-stage Dockerfile
+  - [ ] Minimal image size
+  - [ ] Non-root user
+  - [ ] Health check integration
+
+- [ ] **Development Environment**
+  - [ ] Docker Compose (app + DB + Redis)
+  - [ ] Hot-reload in development
+
+### 🟢 P2 - CI/CD Pipeline
+- [ ] **GitHub Actions**
+  - [ ] Build, test, lint jobs
+  - [ ] Docker build and publish
+  - [ ] Artifact management
+
+---
+
+## 💡 Backlog & Future Ideas
+
+### 🟢 P2 - Advanced Features
+- [ ] Full-text search for notes/materials
+- [ ] Webhook callbacks for reminders
+- [ ] Background worker separation
+- [ ] Real-time notifications
+- [ ] Advanced analytics dashboard
+
+---
+
+## 📁 Current Code Structure
+	
+```
+backend/
+├── internal/
+│   ├── config/          # Configuration management
+│   ├── models/          # GORM models
+│   ├── repositories/    # Data access layer
+│   ├── services/        # Business logic
+│   ├── controllers/     # HTTP handlers
+│   ├── router/          # Route definitions
+│   └── initialize/      # GORM/router initialization
+├── pkg/response/        # Response utilities
+├── migrations/          # Database migrations (Atlas)
+└── sql/                # Legacy SQL files
+```
+
+---
+
+## 📝 Development Notes
+
+- **Framework**: Gin for routing and middleware
+- **Database**: GORM with Atlas migrations
+- **Security**: JWT tokens, never commit secrets
+- **Testing**: Small, composable PRs with tests per milestone
+- **Environment**: Use `.env` files and CI secrets
+
+---
+
+## 🎯 Current Status
+- ✅ **Database Migration Setup**: Atlas with GORM integration
+- ✅ **Project Structure**: Clean architecture with proper separation
+- 🟡 **Authentication**: Basic user model ready
+- ⬜ **API Endpoints**: Ready for implementation
+
+**Last Updated**: $(date)

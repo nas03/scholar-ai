@@ -2,13 +2,8 @@ package main
 
 import (
 	"log"
-	"os"
 
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/nas03/scholar-ai/backend/global"
-	"github.com/nas03/scholar-ai/backend/internal/config"
-	"github.com/nas03/scholar-ai/backend/internal/initialize"
 )
 
 // @title Scholar AI Backend API
@@ -21,37 +16,25 @@ import (
 // @name Authorization
 // @description Provide your JWT token as: Bearer <token>
 func main() {
-	// Load .env file (ignore error if not found - env vars may be set elsewhere)
-	_ = godotenv.Load()
-	gin.ForceConsoleColor()
-	// Initialize logger
-	if err := initialize.InitLogger(); err != nil {
-		log.Fatal("Failed to initialize logger:", err)
-	}
-	defer initialize.SyncLogger()
-
-	// Initialize database connection
-	if err := initialize.InitGorm(); err != nil {
+	// Bootstrap all services
+	if err := Bootstrap(); err != nil {
 		if global.Log != nil {
-			global.Log.Sugar().Fatalw("Failed to initialize database", "error", err)
+			global.Log.Sugar().Fatalw("Failed to bootstrap application", "error", err)
 		}
-		log.Fatal("Failed to initialize database:", err)
+		log.Fatal("Failed to bootstrap application:", err)
 	}
 
-	// Initialize router with middleware and routes
-	r := initialize.InitRouter()
-
-	// Load server configuration
-	serverConfig := config.LoadServerConfig()
-	address := serverConfig.GetAddress()
-
-	// Start server
-	if global.Log != nil {
-		global.Log.Sugar().Infow("Starting server", "address", address, "pid", os.Getpid())
-	} else {
-		log.Printf("Starting server on %s", address)
+	// Create and run the application
+	app, err := NewApp()
+	if err != nil {
+		if global.Log != nil {
+			global.Log.Sugar().Fatalw("Failed to create application", "error", err)
+		}
+		log.Fatal("Failed to create application:", err)
 	}
-	if err := r.Run(address); err != nil {
+
+	// Start the server
+	if err := app.Run(); err != nil {
 		if global.Log != nil {
 			global.Log.Sugar().Fatalw("Failed to start server", "error", err)
 		}

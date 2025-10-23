@@ -10,6 +10,7 @@ require (
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.16.3
+	github.com/wneessen/go-mail v0.7.2
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.43.0
 	gorm.io/driver/mysql v1.6.0
