@@ -31,7 +31,6 @@ web
 # Environment variables - CRITICAL: never commit secrets
 .env
 .env.local
-.env.*.local
 
 # IDE and editor files
 .vscode/

@@ -32,7 +32,7 @@ func (c *UserController) CreateUser(ctx *gin.Context) {
 			"message": "Required field is missing",
 		})
 	}
-	code := c.userService.CreateUser(payload.Username, payload.Password, payload.Email)
+	code := c.userService.CreateUser(ctx, payload.Username, payload.Password, payload.Email)
 	if code != response.CodeSuccess {
 		response.ErrorResponse(ctx, code, "")
 		return

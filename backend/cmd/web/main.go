@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/nas03/scholar-ai/backend/global"
 	"github.com/nas03/scholar-ai/backend/internal/config"
 	"github.com/nas03/scholar-ai/backend/internal/initialize"
@@ -19,6 +21,9 @@ import (
 // @name Authorization
 // @description Provide your JWT token as: Bearer <token>
 func main() {
+	// Load .env file (ignore error if not found - env vars may be set elsewhere)
+	_ = godotenv.Load()
+	gin.ForceConsoleColor()
 	// Initialize logger
 	if err := initialize.InitLogger(); err != nil {
 		log.Fatal("Failed to initialize logger:", err)

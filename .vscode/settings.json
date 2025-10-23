@@ -6,4 +6,11 @@
         "source.organizeLinkDefinitions": "explicit",
         
     },
+    "cSpell.words": [
+        "Infow"
+    ],
+    "makefile.makefilePath": "",
+    "makefile.makeDirectory": "backend",
+    "makefile.extensionOutputFolder": "./.vscode",
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
 }

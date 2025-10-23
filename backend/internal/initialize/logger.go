@@ -18,8 +18,10 @@ func InitLogger() error {
 	var cfg zap.Config
 	if env == "dev" || env == "development" { // human-friendly console logs in dev
 		cfg = zap.NewDevelopmentConfig()
-		// Lower noise: timestamps in ISO8601
-		cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+		cfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("15:04:05.000")
+		cfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		cfg.EncoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
+		cfg.EncoderConfig.ConsoleSeparator = " | "
 	} else { // production defaults to JSON
 		cfg = zap.NewProductionConfig()
 		cfg.EncoderConfig.TimeKey = "ts"
