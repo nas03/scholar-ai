@@ -4,8 +4,6 @@ DB_PASSWORD=root1234
 DB_NAME=scholar_ai
 DB_PORT=3306
 
-.PHONY: dev build test migrate up down
-
 # Run in development mode
 dev:
 	export GIN_MODE=debug && go run ./cmd/$(APP_NAME)
@@ -30,3 +28,6 @@ down:
 	atlas migrate down --env gorm -u "mysql://${DB_USERNAME}:${DB_PASSWORD}@localhost:3306/${DB_NAME}"
 clean:
 	atlas schema clean --env gorm -u "mysql://${DB_USERNAME}:${DB_PASSWORD}@localhost:3306/${DB_NAME}"
+
+
+.PHONY: dev build test migrate up down
