@@ -1,19 +1,17 @@
 package initialize
 
 import (
-	"os"
+	"log"
 
 	"github.com/nas03/scholar-ai/backend/global"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-// InitLogger initializes a global zap logger based on environment variables.
-// APP_ENV: dev|prod (default: prod)
-// LOG_LEVEL: debug|info|warn|error (default: info)
-func InitLogger() error {
-	env := os.Getenv("APP_ENV")
-	levelStr := os.Getenv("LOG_LEVEL")
+// InitLogger initializes a global zap logger based on configuration
+func InitLogger() {
+	env := global.Config.Log.AppEnv
+	levelStr := global.Config.Log.Level
 
 	var cfg zap.Config
 	if env == "dev" || env == "development" { // human-friendly console logs in dev
@@ -36,11 +34,12 @@ func InitLogger() error {
 
 	logger, err := cfg.Build()
 	if err != nil {
-		return err
+		log.Printf("Failed to initialize logger: %v", err)
+		return
 	}
 
 	global.Log = logger
-	return nil
+	log.Println("Logger initialized successfully")
 }
 
 // SyncLogger flushes any buffered log entries.

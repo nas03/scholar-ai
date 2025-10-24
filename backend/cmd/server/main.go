@@ -4,20 +4,12 @@ import (
 	"log"
 
 	"github.com/nas03/scholar-ai/backend/global"
+	"github.com/nas03/scholar-ai/backend/internal/initialize"
 )
 
-// @title Scholar AI Backend API
-// @version 0.1.0
-// @description REST API for Scholar AI backend services.
-// @BasePath /api/v1
-// @schemes http https
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
-// @description Provide your JWT token as: Bearer <token>
 func main() {
 	// Bootstrap all services
-	if err := Bootstrap(); err != nil {
+	if err := initialize.Bootstrap(); err != nil {
 		if global.Log != nil {
 			global.Log.Sugar().Fatalw("Failed to bootstrap application", "error", err)
 		}

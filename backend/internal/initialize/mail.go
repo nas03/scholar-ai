@@ -2,18 +2,46 @@ package initialize
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/nas03/scholar-ai/backend/global"
-	"github.com/nas03/scholar-ai/backend/internal/config"
 	mailErrors "github.com/nas03/scholar-ai/backend/pkg/errors"
 	mail "github.com/wneessen/go-mail"
 )
 
-func InitGoMail() error {
-	config, err := config.LoadMailConfig()
+// MailConfig holds mail service configuration
+type MailConfig struct {
+	Username string
+	Password string
+}
+
+// LoadMailConfig loads mail configuration from global config
+func LoadMailConfig() (*MailConfig, error) {
+	config := &MailConfig{
+		Username: global.Config.Mail.Username,
+		Password: global.Config.Mail.Password,
+	}
+
+	// Validate required fields
+	if config.Username == "" {
+		return nil, fmt.Errorf("mail username is required")
+	}
+	if config.Password == "" {
+		return nil, fmt.Errorf("mail password is required")
+	}
+
+	return config, nil
+}
+
+func InitGoMail() {
+	config, err := LoadMailConfig()
 	if err != nil {
-		global.Log.Sugar().Fatalw(mailErrors.ErrMailConfigMissing.Error(), "error", err)
-		return fmt.Errorf("failed to load mail config: %w", err)
+		if global.Log != nil {
+			global.Log.Sugar().Errorw(mailErrors.ErrMailConfigMissing.Error(), "error", err)
+		} else {
+			log.Printf("Failed to load mail config: %v", err)
+		}
+		return
 	}
 
 	// Create mail client
@@ -24,12 +52,19 @@ func InitGoMail() error {
 		mail.WithPassword(config.Password),
 	)
 	if err != nil {
-		global.Log.Sugar().Errorw(mailErrors.ErrMailClientCreation.Error(), "error", err, "username", config.Username)
-		return fmt.Errorf("failed to create mail client: %w", err)
+		if global.Log != nil {
+			global.Log.Sugar().Errorw(mailErrors.ErrMailClientCreation.Error(), "error", err, "username", config.Username)
+		} else {
+			log.Printf("Failed to create mail client: %v", err)
+		}
+		return
 	}
 
 	// Store the client globally
 	global.Mail = client
-	global.Log.Sugar().Infow("Mail service initialized successfully", "username", config.Username)
-	return nil
+	if global.Log != nil {
+		global.Log.Sugar().Infow("Mail service initialized successfully", "username", config.Username)
+	} else {
+		log.Printf("Mail service initialized successfully for user: %s", config.Username)
+	}
 }

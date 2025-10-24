@@ -1,27 +1,45 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/nas03/scholar-ai/backend/global"
-	"github.com/nas03/scholar-ai/backend/internal/config"
 	"github.com/nas03/scholar-ai/backend/internal/initialize"
 )
+
+// ServerConfig holds server configuration
+type ServerConfig struct {
+	Port string
+	Host string
+}
+
+// GetAddress constructs the server address from config
+func (c *ServerConfig) GetAddress() string {
+	if c.Host == "" {
+		return ":" + c.Port
+	}
+	return c.Host + ":" + c.Port
+}
+
+// LoadServerConfig loads server configuration from global config
+func LoadServerConfig() *ServerConfig {
+	return &ServerConfig{
+		Port: fmt.Sprintf("%d", global.Config.Server.Port),
+		Host: global.Config.Server.Host,
+	}
+}
 
 // App represents the application instance
 type App struct {
 	Router       *gin.Engine
-	ServerConfig *config.ServerConfig
+	ServerConfig *ServerConfig
 }
 
 // NewApp creates and initializes a new application instance
 func NewApp() (*App, error) {
-	// Load .env file (ignore error if not found - env vars may be set elsewhere)
-	_ = godotenv.Load()
-
 	// Enable Gin console colors
 	gin.ForceConsoleColor()
 
@@ -29,7 +47,7 @@ func NewApp() (*App, error) {
 	router := initialize.InitRouter()
 
 	// Load server configuration
-	serverConfig := config.LoadServerConfig()
+	serverConfig := LoadServerConfig()
 
 	return &App{
 		Router:       router,

@@ -178,6 +178,17 @@ func (s *UserService) VerifyUserEmail(ctx context.Context, otp, email string) in
 		return response.CodeInvalidEmail
 	}
 
+	_, err := s.userRepo.GetUserByEmail(ctx, email)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			global.Log.Sugar().Warnw(errMessage.ErrUserNotFound.Error(), "email", email)
+			return response.CodeUserNotFound
+		}
+
+		global.Log.Sugar().Errorw("Error getting user by email", "error", err, "email", email)
+		return response.CodeFailedGetUser
+	}
+
 	// TODO: Implement OTP verification logic
 	// This would typically involve:
 	// 1. Getting user by email

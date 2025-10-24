@@ -10,6 +10,7 @@ import (
 
 // SetupUserRoutes configures all user-related routes
 func SetupUserRoutes(apiV1 *gin.RouterGroup) {
+
 	// Initialize dependencies
 	userRepo := repositories.NewUserRepository(global.Mdb)
 	userService := services.NewUserService(userRepo)
