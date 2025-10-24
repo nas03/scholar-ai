@@ -1,0 +1,24 @@
+server:
+  port: 8080
+  host: ""
+  mode: "prod"
+
+database:
+  host: localhost
+  port: 3306
+  username: root
+  password: ""
+  name: scholar_ai
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_lifetime: 3600
+
+log:
+  level: info
+  app_env: prod
+
+mail:
+  username: ""
+  password: ""
+  smtp_host: smtp.gmail.com
+  smtp_port: 587
