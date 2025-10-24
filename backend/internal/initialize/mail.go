@@ -6,18 +6,15 @@ import (
 
 	"github.com/nas03/scholar-ai/backend/global"
 	mailErrors "github.com/nas03/scholar-ai/backend/pkg/errors"
+	"github.com/nas03/scholar-ai/backend/pkg/setting"
 	mail "github.com/wneessen/go-mail"
 )
 
 // MailConfig holds mail service configuration
-type MailConfig struct {
-	Username string
-	Password string
-}
 
 // LoadMailConfig loads mail configuration from global config
-func LoadMailConfig() (*MailConfig, error) {
-	config := &MailConfig{
+func LoadMailConfig() (*setting.MailSetting, error) {
+	config := &setting.MailSetting{
 		Username: global.Config.Mail.Username,
 		Password: global.Config.Mail.Password,
 	}

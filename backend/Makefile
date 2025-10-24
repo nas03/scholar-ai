@@ -1,4 +1,4 @@
-APP_NAME=web
+APP_NAME=server
 DB_USERNAME=root
 DB_PASSWORD=root1234
 DB_NAME=scholar_ai

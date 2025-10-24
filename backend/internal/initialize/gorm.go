@@ -3,61 +3,48 @@ package initialize
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/nas03/scholar-ai/backend/global"
+	"github.com/nas03/scholar-ai/backend/pkg/setting"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-// DatabaseConfig holds database configuration
-type DatabaseConfig struct {
-	Username string
-	Password string
-	Host     string
-	Port     string
-	Name     string
-}
-
-// GetDSN constructs the database DSN from config
-func (c *DatabaseConfig) GetDSN() string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=UTC",
-		c.Username, c.Password, c.Host, c.Port, c.Name)
-}
-
-// LoadDatabaseConfig loads database configuration from global config
-func LoadDatabaseConfig() (*DatabaseConfig, error) {
-	config := &DatabaseConfig{
-		Username: global.Config.Database.Username,
-		Password: global.Config.Database.Password,
-		Host:     global.Config.Database.Host,
-		Port:     fmt.Sprintf("%d", global.Config.Database.Port),
-		Name:     global.Config.Database.Name,
-	}
-
-	// Validate required fields
-	if config.Username == "" {
-		return nil, fmt.Errorf("database username is required")
-	}
-	if config.Password == "" {
-		return nil, fmt.Errorf("database password is required")
-	}
-	if config.Name == "" {
-		return nil, fmt.Errorf("database name is required")
-	}
-
-	return config, nil
+// GetDSN constructs the database DSN from DatabaseSetting
+func GetDSN(config *setting.DatabaseSetting) string {
+	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=UTC",
+		config.Username, config.Password, config.Host, config.Port, config.Name)
 }
 
 // InitGorm initializes and returns a GORM database connection
 func InitGorm() {
-	// Load database configuration
-	dbConfig, err := LoadDatabaseConfig()
-	if err != nil {
+	// Use database configuration directly from global config
+	dbConfig := &global.Config.Database
+
+	// Validate required fields
+	if dbConfig.Username == "" {
 		if global.Log != nil {
-			global.Log.Sugar().Errorw("Failed to load database config", "error", err)
+			global.Log.Sugar().Errorw("Database username is required")
 		} else {
-			log.Printf("Failed to load database config: %v", err)
+			log.Printf("Database username is required")
+		}
+		return
+	}
+	if dbConfig.Password == "" {
+		if global.Log != nil {
+			global.Log.Sugar().Errorw("Database password is required")
+		} else {
+			log.Printf("Database password is required")
+		}
+		return
+	}
+	if dbConfig.Name == "" {
+		if global.Log != nil {
+			global.Log.Sugar().Errorw("Database name is required")
+		} else {
+			log.Printf("Database name is required")
 		}
 		return
 	}
@@ -68,7 +55,7 @@ func InitGorm() {
 	}
 
 	// Open database connection
-	db, err := gorm.Open(mysql.Open(dbConfig.GetDSN()), gormConfig)
+	db, err := gorm.Open(mysql.Open(GetDSN(dbConfig)), gormConfig)
 	if err != nil {
 		if global.Log != nil {
 			global.Log.Sugar().Errorw("Failed to open database connection", "error", err)
@@ -89,9 +76,12 @@ func InitGorm() {
 		return
 	}
 
-	// Configure connection pool
-	sqlDB.SetMaxIdleConns(10)
-	sqlDB.SetMaxOpenConns(100)
+	// Configure connection pool using values from config
+	sqlDB.SetMaxIdleConns(dbConfig.MaxIdleConns)
+	sqlDB.SetMaxOpenConns(dbConfig.MaxOpenConns)
+	if dbConfig.ConnMaxLifetime > 0 {
+		sqlDB.SetConnMaxLifetime(time.Duration(dbConfig.ConnMaxLifetime) * time.Second)
+	}
 
 	// Test the connection
 	if err := sqlDB.Ping(); err != nil {
