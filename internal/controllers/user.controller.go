@@ -26,18 +26,21 @@ func Ping(ctx *gin.Context) {
 
 func (c *UserController) CreateUser(ctx *gin.Context) {
 	var payload models.CreateUserRequest
-	err := ctx.ShouldBindJSON(payload)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Required field is missing",
-		})
-	}
-	code := c.userService.CreateUser(ctx, payload.Username, payload.Password, payload.Email)
-	if code != response.CodeSuccess {
-		response.ErrorResponse(ctx, code, "")
+
+	// Validate JSON binding
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		response.ErrorResponse(ctx, response.CodeInvalidInput, err.Error())
 		return
 	}
 
-	response.SuccessResponse(ctx, code, "", nil)
+	// Call service to create user
+	code := c.userService.CreateUser(ctx, payload.Username, payload.Password, payload.Email)
 
+	// Handle response based on service result
+	if code == response.CodeSuccess {
+		data := map[string]interface{}{"requiresOtp": true}
+		response.SuccessResponse(ctx, code, data)
+	} else {
+		response.ErrorResponse(ctx, code, "")
+	}
 }

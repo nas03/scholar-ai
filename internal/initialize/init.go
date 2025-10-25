@@ -12,6 +12,7 @@ func Bootstrap() error {
 	// Initialize services (errors are logged internally)
 	InitGorm()
 	InitMailClient()
+	InitRedis()
 
 	return nil
 }

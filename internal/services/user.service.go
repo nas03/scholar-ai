@@ -14,6 +14,7 @@ import (
 	"github.com/nas03/scholar-ai/backend/internal/utils"
 	errMessage "github.com/nas03/scholar-ai/backend/pkg/errors"
 	"github.com/nas03/scholar-ai/backend/pkg/response"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -42,29 +43,29 @@ func NewUserService(userRepository repo.IUserRepository) IUserService {
 func (s *UserService) CreateUser(ctx context.Context, username, password, email string) int {
 	// Validate input parameters
 	if username == "" {
-		global.Log.Sugar().Warnw(errMessage.ErrInvalidUsername.Error(), "username", username)
+		global.Log.Warn(errMessage.ErrInvalidUsername.Error(), zap.String("username", username))
 		return response.CodeInvalidUsername
 	}
 	if email == "" {
-		global.Log.Sugar().Warnw(errMessage.ErrInvalidEmail.Error(), "email", email)
+		global.Log.Warn(errMessage.ErrInvalidEmail.Error(), zap.String("email", email))
 		return response.CodeInvalidEmail
 	}
 	if password == "" {
-		global.Log.Sugar().Warnw(errMessage.ErrEmptyPassword.Error(), "password", password)
+		global.Log.Warn(errMessage.ErrEmptyPassword.Error(), zap.String("password", password))
 		return response.CodeEmptyPassword
 	}
 
 	// Generate user's uuid
 	userUUID, err := uuid.NewRandom()
 	if err != nil {
-		global.Log.Sugar().Errorw("Error creating UUID", "error", err)
+		global.Log.Error("Error creating UUID", zap.Error(err))
 		return response.CodeRegisterInternalError
 	}
 
 	// Hash user's password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		global.Log.Sugar().Errorw("Error generating hashedPassword", "error", err)
+		global.Log.Error("Error generating hashedPassword", zap.Error(err))
 		return response.CodeRegisterInternalError
 	}
 
@@ -79,11 +80,11 @@ func (s *UserService) CreateUser(ctx context.Context, username, password, email 
 	err = s.userRepo.CreateUser(ctx, user)
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			global.Log.Sugar().Warnw(errMessage.ErrUserAlreadyExists.Error(), "email", email, "username", username)
+			global.Log.Warn(errMessage.ErrUserAlreadyExists.Error(), zap.String("email", email), zap.String("username", username))
 			return response.CodeUserAlreadyExists
 		}
 
-		global.Log.Sugar().Errorw("Error creating new user", "error", err)
+		global.Log.Error("Error creating new user", zap.Error(err))
 		return response.CodeRegisterInternalError
 	}
 
@@ -91,7 +92,7 @@ func (s *UserService) CreateUser(ctx context.Context, username, password, email 
 	otp := utils.GenerateSixDigitOtp()
 	redisKey := fmt.Sprintf(consts.REDIS_KEY_URS_OTP_PREFIX, email)
 	if err := utils.NewRedisCache().SetEx(ctx, redisKey, otp, consts.REDIS_OTP_EXPIRATION); err != nil {
-		global.Log.Sugar().Errorf("Failed to store otp in redis", "error", err)
+		global.Log.Error("Failed to store otp in redis", zap.Error(err))
 		return response.CodeRegisterInternalError
 	}
 
@@ -103,10 +104,10 @@ func (s *UserService) CreateUser(ctx context.Context, username, password, email 
 		fmt.Sprintf("<p>%d</p>", otp),
 	)
 	if err != nil {
-		global.Log.Sugar().Error("Failed to send verification email to %w", email, "error", err)
+		global.Log.Error("Failed to send verification email", zap.String("email", email), zap.Error(err))
 		return response.CodeMailSendFailed
 	}
-	global.Log.Sugar().Infow("Success creating new user", "userID", userUUID)
+	global.Log.Info("Success creating new user", zap.String("userID", userUUID.String()))
 	return response.CodeSuccess
 }
 
@@ -115,11 +116,11 @@ func (s *UserService) GetUserByEmail(ctx context.Context, email string) (*models
 	user, err := s.userRepo.GetUserByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			global.Log.Sugar().Warnw(errMessage.ErrUserNotFound.Error(), "email", email)
+			global.Log.Warn(errMessage.ErrUserNotFound.Error(), zap.String("email", email))
 			return nil, response.CodeUserNotFound
 		}
 
-		global.Log.Sugar().Errorw("Error getting user by email", "error", err, "email", email)
+		global.Log.Error("Error getting user by email", zap.Error(err), zap.String("email", email))
 		return nil, response.CodeFailedGetUser
 	}
 
@@ -131,11 +132,11 @@ func (s *UserService) GetUserByID(ctx context.Context, userID string) (*models.U
 	user, err := s.userRepo.GetUserByID(ctx, userID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			global.Log.Sugar().Warnw(errMessage.ErrUserNotFound.Error(), "userID", userID)
+			global.Log.Warn(errMessage.ErrUserNotFound.Error(), zap.String("userID", userID))
 			return nil, response.CodeUserNotFound
 		}
 
-		global.Log.Sugar().Errorw("Error getting user by ID", "error", err, "userID", userID)
+		global.Log.Error("Error getting user by ID", zap.Error(err), zap.String("userID", userID))
 		return nil, response.CodeFailedGetUser
 	}
 
@@ -148,15 +149,15 @@ func (s *UserService) UpdateUserAccountStatus(ctx context.Context, userID string
 	if err != nil {
 		// Check if it's a validation error from repository
 		if errors.Is(err, errMessage.ErrInvalidStatus) {
-			global.Log.Sugar().Warnw(errMessage.ErrInvalidStatus.Error(), "userID", userID, "status", status)
+			global.Log.Warn(errMessage.ErrInvalidStatus.Error(), zap.String("userID", userID), zap.Int8("status", status))
 			return response.CodeInvalidInput
 		}
 
-		global.Log.Sugar().Errorw("Error updating user account status", "error", err, "userID", userID, "status", status)
+		global.Log.Error("Error updating user account status", zap.Error(err), zap.String("userID", userID), zap.Int8("status", status))
 		return response.CodeFailedUpdateUser
 	}
 
-	global.Log.Sugar().Infow("Success updating user account status", "userID", userID, "status", status)
+	global.Log.Info("Success updating user account status", zap.String("userID", userID), zap.Int8("status", status))
 	return response.CodeSuccess
 }
 
@@ -164,17 +165,17 @@ func (s *UserService) UpdateUserAccountStatus(ctx context.Context, userID string
 func (s *UserService) UpdateUserPassword(ctx context.Context, userID, password string) int {
 	// Validate password at service level
 	if password == "" {
-		global.Log.Sugar().Warnw(errMessage.ErrEmptyPassword.Error(), "userID", userID)
+		global.Log.Warn(errMessage.ErrEmptyPassword.Error(), zap.String("userID", userID))
 		return response.CodeEmptyPassword
 	}
 
 	err := s.userRepo.UpdateUserPassword(ctx, userID, password)
 	if err != nil {
-		global.Log.Sugar().Errorw("Error updating user password", "error", err, "userID", userID)
+		global.Log.Error("Error updating user password", zap.Error(err), zap.String("userID", userID))
 		return response.CodeFailedUpdateUser
 	}
 
-	global.Log.Sugar().Infow("Success updating user password", "userID", userID)
+	global.Log.Info("Success updating user password", zap.String("userID", userID))
 	return response.CodeSuccess
 }
 
@@ -182,33 +183,33 @@ func (s *UserService) UpdateUserPassword(ctx context.Context, userID, password s
 func (s *UserService) UpdateUserVerification(ctx context.Context, userID string, isEmailVerified, isPhoneVerified bool) int {
 	err := s.userRepo.UpdateUserVerification(ctx, userID, isEmailVerified, isPhoneVerified)
 	if err != nil {
-		global.Log.Sugar().Errorw("Error updating user verification", "error", err, "userID", userID)
+		global.Log.Error("Error updating user verification", zap.Error(err), zap.String("userID", userID))
 		return response.CodeFailedUpdateUser
 	}
 
-	global.Log.Sugar().Infow("Success updating user verification", "userID", userID, "emailVerified", isEmailVerified, "phoneVerified", isPhoneVerified)
+	global.Log.Info("Success updating user verification", zap.String("userID", userID), zap.Bool("emailVerified", isEmailVerified), zap.Bool("phoneVerified", isPhoneVerified))
 	return response.CodeSuccess
 }
 
 func (s *UserService) VerifyUserEmail(ctx context.Context, otp, email string) int {
 	// Validate input parameters
 	if otp == "" {
-		global.Log.Sugar().Warnw(errMessage.ErrInvalidOTP.Error(), "otp", otp)
+		global.Log.Warn(errMessage.ErrInvalidOTP.Error(), zap.String("otp", otp))
 		return response.CodeInvalidOTP
 	}
 	if email == "" {
-		global.Log.Sugar().Warnw(errMessage.ErrInvalidEmail.Error(), "email", email)
+		global.Log.Warn(errMessage.ErrInvalidEmail.Error(), zap.String("email", email))
 		return response.CodeInvalidEmail
 	}
 
 	_, err := s.userRepo.GetUserByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			global.Log.Sugar().Warnw(errMessage.ErrUserNotFound.Error(), "email", email)
+			global.Log.Warn(errMessage.ErrUserNotFound.Error(), zap.String("email", email))
 			return response.CodeUserNotFound
 		}
 
-		global.Log.Sugar().Errorw("Error getting user by email", "error", err, "email", email)
+		global.Log.Error("Error getting user by email", zap.Error(err), zap.String("email", email))
 		return response.CodeFailedGetUser
 	}
 
@@ -219,6 +220,6 @@ func (s *UserService) VerifyUserEmail(ctx context.Context, otp, email string) in
 	// 3. Updating user verification status
 	// 4. Clearing the OTP from storage
 
-	global.Log.Sugar().Infow("Email verification successful", "email", email)
+	global.Log.Info("Email verification successful", zap.String("email", email))
 	return response.CodeSuccess
 }

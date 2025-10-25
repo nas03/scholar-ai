@@ -19,7 +19,7 @@ func SetupUserRoutes(apiV1 *gin.RouterGroup) {
 	// User routes
 	users := apiV1.Group("/users")
 	{
-		users.POST("/", userController.CreateUser)
+		users.POST("/create", userController.CreateUser)
 		users.GET("/ping", controllers.Ping) // Keep ping for testing
 	}
 }

@@ -16,10 +16,14 @@ func InitLogger() {
 	var cfg zap.Config
 	if env == "dev" || env == "development" { // human-friendly console logs in dev
 		cfg = zap.NewDevelopmentConfig()
-		cfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("15:04:05.000")
+		cfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("15:04:05")
 		cfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 		cfg.EncoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
-		cfg.EncoderConfig.ConsoleSeparator = " | "
+		cfg.EncoderConfig.ConsoleSeparator = " "
+		cfg.EncoderConfig.EncodeName = zapcore.FullNameEncoder
+		cfg.OutputPaths = []string{"stdout"} // Ensure logs go to terminal
+		cfg.ErrorOutputPaths = []string{"stderr"}
+		cfg.DisableStacktrace = true // Cleaner output for dev
 	} else { // production defaults to JSON
 		cfg = zap.NewProductionConfig()
 		cfg.EncoderConfig.TimeKey = "ts"

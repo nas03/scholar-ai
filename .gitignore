@@ -25,6 +25,7 @@
 *.dylib
 web
 main
+server
 
 # Go test binaries
 *.test
@@ -120,3 +121,4 @@ docs/swagger.yaml
 # Build artifacts
 web
 
+server

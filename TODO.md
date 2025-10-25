@@ -29,7 +29,7 @@ Golang backend using Gin + GORM for the Scholar AI application. This roadmap org
   - [ ] JSON output in production
 
 - [ ] **Error & Response Contract**
-  - [ ] Use `pkg/response` consistently
+  - [x] Use `pkg/response` consistently
   - [ ] Add error codes and request-id correlation
   - [ ] Uniform error payload structure
   - [ ] Update controllers to use helpers
@@ -58,10 +58,10 @@ Golang backend using Gin + GORM for the Scholar AI application. This roadmap org
   - [ ] Refresh token rotation
 
 - [ ] **Email Verification**
-  - [ ] Token generation + confirm endpoint
+  - [x] Token generation + confirm endpoint
   - [ ] Resend with cooldown
-  - [ ] Mock provider for development
-  - [ ] Interface for real provider
+  - [x] Mock provider for development
+  - [x] Interface for real provider
 
 - [ ] **Login Security**
   - [ ] Failed attempt tracking

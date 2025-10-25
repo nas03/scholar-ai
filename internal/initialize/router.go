@@ -39,8 +39,7 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(middleware.CORSMiddleware())
 	r.Use(middleware.SecurityHeaders())
-	r.Use(middleware.RequestID())
-	r.Use(middleware.RequestLogger())
+	r.Use(middleware.LoggerMiddleware()) // Simple, proven logging from fidecwalletserver
 
 	// Setup API routes
 	apiV1 := r.Group("/api/v1")
