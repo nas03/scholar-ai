@@ -5,7 +5,8 @@ type Config struct {
 	Server   ServerSetting   `mapstructure:"server"`
 	Database DatabaseSetting `mapstructure:"database"`
 	Log      LogSetting      `mapstructure:"log"`
-	Mail     MailSetting     `mapstructure:"mail"`
+	Redis    RedisSetting    `mapstructure:"redis"`
+	Resend   ResendSetting   `mapstructure:"resend"`
 }
 
 // ServerSetting holds server configuration
@@ -34,9 +35,14 @@ type LogSetting struct {
 }
 
 // MailSetting holds mail service configuration
-type MailSetting struct {
-	Username string `mapstructure:"username"`
+type ResendSetting struct {
+	ApiKey string `mapstructure:"api_key"`
+	From   string `mapstructure:"from"`
+}
+
+// RedisSetting holds redis configuration
+type RedisSetting struct {
+	Address  string `mapstructure:"address"`
 	Password string `mapstructure:"password"`
-	SMTPHost string `mapstructure:"smtp_host"`
-	SMTPPort int    `mapstructure:"smtp_port"`
+	Database int    `mapstructure:"database"`
 }

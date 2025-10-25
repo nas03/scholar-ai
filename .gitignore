@@ -10,7 +10,7 @@
 # - Shared patterns: IDE files, logs, temporary files, environment variables
 # - Project specific: Configuration files with secrets, documentation
 #
-# Note: Individual .gitignore files in backend/ and frontend/ have been removed
+# Note: Individual .gitignore files in  and frontend/ have been removed
 # to avoid conflicts and maintain consistency across the monorepo.
 
 # =============================================================================
@@ -44,9 +44,9 @@ go.work.sum
 vendor/
 
 # Go build output
-backend/bin/
-backend/dist/
-backend/build/
+bin/
+dist/
+build/
 
 # Go profiling data
 *.prof
@@ -60,36 +60,7 @@ mem.pprof
 # Go module cache (uncomment if needed)
 # go.sum
 
-# =============================================================================
-# FRONTEND (React/Next.js) - Ignore Patterns
-# =============================================================================
 
-# Node.js dependencies
-frontend/node_modules/
-node_modules/
-
-# Frontend build outputs
-frontend/dist/
-frontend/build/
-frontend/.next/
-frontend/out/
-
-# Frontend package manager files
-frontend/package-lock.json
-frontend/yarn.lock
-frontend/pnpm-lock.yaml
-frontend/bun.lockb
-
-# Frontend environment files
-frontend/.env.local
-frontend/.env.development.local
-frontend/.env.test.local
-frontend/.env.production.local
-
-# Frontend cache directories
-frontend/.cache/
-frontend/.parcel-cache/
-frontend/.turbo/
 
 # =============================================================================
 # SHARED - Common Ignore Patterns
@@ -130,22 +101,22 @@ temp/
 *.sqlite3
 
 # Configuration files with secrets
-backend/config/development.yaml
-backend/config/production.yaml
-backend/config/local.yaml
+config/development.yaml
+config/production.yaml
+config/local.yaml
 
 # =============================================================================
 # PROJECT SPECIFIC - Scholar AI
 # =============================================================================
 
 # API documentation (auto-generated)
-backend/docs/docs.go
-backend/docs/swagger.json
-backend/docs/swagger.yaml
+docs/docs.go
+docs/swagger.json
+docs/swagger.yaml
 
 # Air live reload (Go hot reload)
-backend/.air.toml
+.air.toml
 
 # Build artifacts
-backend/web
-frontend/web
+web
+

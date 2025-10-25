@@ -11,7 +11,7 @@ func Bootstrap() error {
 
 	// Initialize services (errors are logged internally)
 	InitGorm()
-	InitGoMail()
+	InitMailClient()
 
 	return nil
 }

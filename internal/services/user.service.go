@@ -3,11 +3,15 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/nas03/scholar-ai/backend/global"
+	"github.com/nas03/scholar-ai/backend/internal/consts"
+	"github.com/nas03/scholar-ai/backend/internal/helper"
 	"github.com/nas03/scholar-ai/backend/internal/models"
 	repo "github.com/nas03/scholar-ai/backend/internal/repositories"
+	"github.com/nas03/scholar-ai/backend/internal/utils"
 	errMessage "github.com/nas03/scholar-ai/backend/pkg/errors"
 	"github.com/nas03/scholar-ai/backend/pkg/response"
 	"golang.org/x/crypto/bcrypt"
@@ -54,14 +58,14 @@ func (s *UserService) CreateUser(ctx context.Context, username, password, email 
 	userUUID, err := uuid.NewRandom()
 	if err != nil {
 		global.Log.Sugar().Errorw("Error creating UUID", "error", err)
-		return response.CodeFailedCreateUser
+		return response.CodeRegisterInternalError
 	}
 
 	// Hash user's password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		global.Log.Sugar().Errorw("Error generating hashedPassword", "error", err)
-		return response.CodeFailedCreateUser
+		return response.CodeRegisterInternalError
 	}
 
 	user := &models.User{
@@ -71,18 +75,37 @@ func (s *UserService) CreateUser(ctx context.Context, username, password, email 
 		Email:    email,
 	}
 
+	// Create user
 	err = s.userRepo.CreateUser(ctx, user)
 	if err != nil {
-		// Handle different types of errors from repository
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			global.Log.Sugar().Warnw(errMessage.ErrUserAlreadyExists.Error(), "email", email, "username", username)
 			return response.CodeUserAlreadyExists
 		}
 
 		global.Log.Sugar().Errorw("Error creating new user", "error", err)
-		return response.CodeFailedCreateUser
+		return response.CodeRegisterInternalError
 	}
 
+	// Send OTP verify user's email
+	otp := utils.GenerateSixDigitOtp()
+	redisKey := fmt.Sprintf(consts.REDIS_KEY_URS_OTP_PREFIX, email)
+	if err := utils.NewRedisCache().SetEx(ctx, redisKey, otp, consts.REDIS_OTP_EXPIRATION); err != nil {
+		global.Log.Sugar().Errorf("Failed to store otp in redis", "error", err)
+		return response.CodeRegisterInternalError
+	}
+
+	// TODO: Should save mailID, email, email type to DB
+	_, err = helper.NewMailHelper().SendMail(
+		ctx,
+		email,
+		fmt.Sprintf("ScholarAI Verification Code %d", otp),
+		fmt.Sprintf("<p>%d</p>", otp),
+	)
+	if err != nil {
+		global.Log.Sugar().Error("Failed to send verification email to %w", email, "error", err)
+		return response.CodeMailSendFailed
+	}
 	global.Log.Sugar().Infow("Success creating new user", "userID", userUUID)
 	return response.CodeSuccess
 }
